@@ -26,6 +26,11 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE: 
+                print("jump")
+        if event.type == pygame.KEYUP:
+            print("key up")
     screen.blit(sky_surface, (0,0))
     screen.blit(ground_surface, (0, screen.get_height() - ground_surface.get_height()))
     pygame.draw.rect(screen, '#16b570', score_rect)
@@ -40,6 +45,10 @@ while True:
     if player_rect.right >= 800:
         player_rect.left = 0
     screen.blit(player_surf, player_rect)
+
+    # keys = pygame.key.get_pressed()
+    # if keys[pygame.K_SPACE]:
+    #     print("jump")
 
     if player_rect.colliderect(sammi_rect):
         print("hii")
