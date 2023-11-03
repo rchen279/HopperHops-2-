@@ -21,14 +21,16 @@ sammi_rect = sammi_surface.get_rect(topleft = (600, 240))
 player_surf = pygame.image.load("graphics/player/hopper_player.png")
 player_rect = player_surf.get_rect(midbottom = (100, screen.get_height() - ground_surface.get_height()))
 
+player_gravity = 0
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE: 
-                print("jump")
+            if event.key == pygame.K_SPACE and player_rect.bottom >= 300: 
+                player_gravity = -20
         if event.type == pygame.KEYUP:
             print("key up")
     screen.blit(sky_surface, (0,0))
@@ -44,6 +46,11 @@ while True:
     player_rect.left += 3
     if player_rect.right >= 800:
         player_rect.left = 0
+    player_gravity += 1
+
+    player_rect.y += player_gravity
+    if player_rect.bottom >= screen.get_height() - ground_surface.get_height():
+        player_rect.bottom = screen.get_height() - ground_surface.get_height()
     screen.blit(player_surf, player_rect)
 
     # keys = pygame.key.get_pressed()
