@@ -23,42 +23,52 @@ player_rect = player_surf.get_rect(midbottom = (100, screen.get_height() - groun
 
 player_gravity = 0
 
+game_active = True
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE and player_rect.bottom >= 300: 
-                player_gravity = -20
-        if event.type == pygame.KEYUP:
-            print("key up")
-    screen.blit(sky_surface, (0,0))
-    screen.blit(ground_surface, (0, screen.get_height() - ground_surface.get_height()))
-    pygame.draw.rect(screen, '#16b570', score_rect)
-    screen.blit(score_surf, score_rect)
+        if game_active:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and player_rect.bottom >= 300: 
+                    player_gravity = -20
+            if event.type == pygame.KEYUP:
+                print("key up")
+        else:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                game_active = True
+                sammi_rect.left = 800
+    if game_active:
+        screen.blit(sky_surface, (0,0))
+        screen.blit(ground_surface, (0, screen.get_height() - ground_surface.get_height()))
+        pygame.draw.rect(screen, '#16b570', score_rect)
+        screen.blit(score_surf, score_rect)
 
-    sammi_rect.x -= 3
-    if sammi_rect.x <= -100:
-        sammi_rect.x = 800
-    screen.blit(sammi_surface, sammi_rect)
+        sammi_rect.x -= 3
+        if sammi_rect.x <= -100:
+            sammi_rect.x = 800
+        screen.blit(sammi_surface, sammi_rect)
 
-    player_rect.left += 3
-    if player_rect.right >= 800:
-        player_rect.left = 0
-    player_gravity += 1
+        player_rect.left += 3
+        if player_rect.right >= 800:
+            player_rect.left = 0
+        player_gravity += 1
 
-    player_rect.y += player_gravity
-    if player_rect.bottom >= screen.get_height() - ground_surface.get_height():
-        player_rect.bottom = screen.get_height() - ground_surface.get_height()
-    screen.blit(player_surf, player_rect)
+        player_rect.y += player_gravity
+        if player_rect.bottom >= screen.get_height() - ground_surface.get_height():
+            player_rect.bottom = screen.get_height() - ground_surface.get_height()
+        screen.blit(player_surf, player_rect)
 
-    # keys = pygame.key.get_pressed()
-    # if keys[pygame.K_SPACE]:
-    #     print("jump")
+        # keys = pygame.key.get_pressed()
+        # if keys[pygame.K_SPACE]:
+        #     print("jump")
 
-    if player_rect.colliderect(sammi_rect):
-        print("hii")
+        if player_rect.colliderect(sammi_rect):
+            game_active = False
+    else:
+        screen.fill("Yellow")
 
     pygame.display.update()
     clock.tick(60)
