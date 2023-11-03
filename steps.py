@@ -1,5 +1,6 @@
 import pygame
 from sys import exit
+from random import randint
 
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
@@ -27,6 +28,34 @@ sammi_rect = sammi_surface.get_rect(topleft = (600, 240))
 sammi_surface = pygame.transform.scale(sammi_surface, (sammi_surface.get_width() * 0.7, sammi_surface.get_height() * 0.7))
 sammi_rect = sammi_surface.get_rect(topleft = (600,260))
 
+lucy_surf = pygame.image.load("graphics/eboard_Faces/lucy_head_icon.png")
+utsha_surf = pygame.image.load("graphics/eboard_Faces/utsha_icon.png")
+
+obstacle_rect_list = []
+
+def obstacle_movement(obstacle_list):
+    if obstacle_list:
+        for obstacle_rect in obstacle_list:
+            obstacle_rect.x -= 5
+
+            if obstacle_rect.bottom == 316:
+                screen.blit(sammi_surface, obstacle_rect)
+            elif obstacle_rect.bottom == 170:
+                screen.blit(lucy_surf, obstacle_rect)
+            else:
+                screen.blit(utsha_surf, obstacle_rect)
+        obstacle_list = [obs for obs in obstacle_list if obs.x > -100]
+        return obstacle_list
+    else:
+        return obstacle_list
+
+def collisions(player, obstacles):
+    if obstacles:
+        for obstacle_rect in obstacles:
+            if player.colliderect(obstacle_rect):
+                return False
+    return True
+
 player_surf = pygame.image.load("graphics/player/hopper_player.png")
 player_rect = player_surf.get_rect(midbottom = (100, screen.get_height() - ground_surface.get_height()))
 
@@ -45,6 +74,9 @@ game_message = test_font.render("Press space to run", False, "Black")
 game_message = pygame.transform.scale(game_message, (game_message.get_width() * 0.6, game_message.get_height()*0.6))
 game_message_rect = game_message.get_rect(center = (400, 320))
 
+obstacle_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(obstacle_timer, 1500)
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -61,15 +93,20 @@ while True:
                 game_active = True
                 sammi_rect.left = 800
                 start_time = int(pygame.time.get_ticks()/1000)
+        if event.type == obstacle_timer and game_active:
+            print(sammi_rect.bottomright)
+            randNum = randint(0,2)
+            if randNum == 0:
+                obstacle_rect_list.append(sammi_surface.get_rect(bottomright = (randint(900, 1100), 316)))
+            elif randNum == 1:
+                obstacle_rect_list.append(lucy_surf.get_rect(bottomright = (randint(900, 1100), 170)))
+            if randNum == 0:
+                obstacle_rect_list.append(utsha_surf.get_rect(bottomright = (randint(900, 1100), 140)))
+
     if game_active:
         screen.blit(sky_surface, (0,0))
         screen.blit(ground_surface, (0, screen.get_height() - ground_surface.get_height()))
         score = display_score()
-
-        sammi_rect.x -= 3
-        if sammi_rect.x <= -100:
-            sammi_rect.x = 800
-        screen.blit(sammi_surface, sammi_rect)
 
         player_rect.left += 3
         if player_rect.right >= 800:
@@ -81,13 +118,14 @@ while True:
             player_rect.bottom = screen.get_height() - ground_surface.get_height()
         screen.blit(player_surf, player_rect)
 
-        # keys = pygame.key.get_pressed()
-        # if keys[pygame.K_SPACE]:
-        #     print("jump")
+        obstacle_rect_list = obstacle_movement(obstacle_rect_list)
 
-        if player_rect.colliderect(sammi_rect):
-            game_active = False
+        game_active = collisions(player_rect, obstacle_rect_list)
     else:
+        obstacle_rect_list.clear()
+        player_rect.midbottom = (80, 300)
+        player_gravity = 0
+
         screen.fill("#086375")
         screen.blit(hopper_screen, hopper_screen_rect)
         screen.blit(game_name, game_name_rect)
