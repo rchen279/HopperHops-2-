@@ -77,6 +77,11 @@ game_message_rect = game_message.get_rect(center = (400, 320))
 obstacle_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_timer, 1500)
 
+jump_sound = pygame.mixer.Sound("audio/jump.mp3")
+jump_sound.set_volume(0.5)
+bg_music = pygame.mixer.Sound("audio/music.wav")
+bg_music.play(loops = -1)
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -86,6 +91,7 @@ while True:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and player_rect.bottom >= 300: 
                     player_gravity = -20
+                    jump_sound.play()
             if event.type == pygame.KEYUP:
                 print("key up")
         else:
