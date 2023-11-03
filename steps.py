@@ -12,8 +12,12 @@ sky_surface = pygame.image.load("graphics/Sky.jpg").convert()
 ground_surface = pygame.image.load("graphics/ground.png").convert()
 
 test_font = pygame.font.Font("font/open-sans/OpenSans-Regular.ttf", 50)
-score_surf = test_font.render("My Game", False, "Black")
-score_rect = score_surf.get_rect(center = (400, 50))
+start_time = 0
+def display_score():
+    current_time = int(pygame.time.get_ticks()/1000) - start_time
+    score_surf = test_font.render(f"Score {current_time}", False, (64,64,64))
+    score_rect = score_surf.get_rect(center = (400, 50))
+    screen.blit(score_surf, score_rect)
 
 sammi_surface = pygame.image.load("graphics/eboard_Faces/sammi_head_icon.png").convert_alpha()
 sammi_rect = sammi_surface.get_rect(topleft = (600, 240))
@@ -40,11 +44,11 @@ while True:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 game_active = True
                 sammi_rect.left = 800
+                start_time = int(pygame.time.get_ticks()/1000)
     if game_active:
         screen.blit(sky_surface, (0,0))
         screen.blit(ground_surface, (0, screen.get_height() - ground_surface.get_height()))
-        pygame.draw.rect(screen, '#16b570', score_rect)
-        screen.blit(score_surf, score_rect)
+        display_score()
 
         sammi_rect.x -= 3
         if sammi_rect.x <= -100:
